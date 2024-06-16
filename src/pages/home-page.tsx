@@ -7,6 +7,7 @@ import {
     CardTitle,
   } from "@/components/ui/card"
 import { useEffect, useState } from "react";
+import { RecipeType } from "@/types";
 
 
 export default function HomePage() {
@@ -15,8 +16,6 @@ export default function HomePage() {
         "All",
         "Asian",
         "American",
-        "Ugandan",
-        "Kenyan",
         "Greek",
         "Italian",
         "Indian",
@@ -27,16 +26,56 @@ export default function HomePage() {
     ];
 
         const [recipes, setReceipes] = useState([]);
+        const [filterRecipes, setFilterRecipes] = useState([]);
+        const [badge, setBadge] = useState("");
 
+        const getAllReceipes = async () => {
+            const response = await  fetch('https://dummyjson.com/recipes');
+            
+            const data = await response.json();
+
+            return data.recipes;
+        };
+
+        //Getting all receipes 
         useEffect(() => {
-            fetch('https://dummyjson.com/recipes')
-            .then((res) => {
-                return res.json();
-            })
-            .then((data) => {
-                setReceipes(data.recipes)
-            })
+
+            const getRecipes = async () => {
+                const recipes = await getAllReceipes();
+                if(recipes){
+                    setReceipes(recipes)
+                }
+            }
+
+            getRecipes();
+
         }, []);
+
+        //Get a filtered recipes 
+        useEffect(() => {
+
+            const getFilteredRecipes = async() => {
+                const recipes = await getAllReceipes();
+                
+                const filteredRecipesByCuisine = recipes.filter(
+                    (recipe: RecipeType) => recipe.cuisine === badge
+                );
+
+                setFilterRecipes(filteredRecipesByCuisine);
+            };
+
+            if(badge){
+                getFilteredRecipes();
+            }
+        });
+
+        const handleOnClick = (
+            e: React.ChangeEvent<HTMLInputElement>,
+            cuisine: String
+        ) => {
+            e.preventDefault();
+            setBadge(cuisine)
+        };
     
 
 
@@ -45,16 +84,18 @@ export default function HomePage() {
             <div className="my-12">
                 {cuisines.map((cuisine, idx) => 
                     <Badge 
-                    key={`${cuisine}-${idx}`}
-                    variant={"outline"}
-                    className="border-orange-800 text-gray-900 text-lg mx-2 my-1 hover:cursor-pointer bg-orange-50 hover:scale-110 ease-in duration-200"
-                    >{cuisine}</Badge>
+                        key={`${cuisine}-${idx}`}
+                        variant={"outline"}
+                        className="border-orange-800 text-gray-900 text-lg mx-2 my-1 hover:cursor-pointer bg-orange-50 hover:scale-110 ease-in duration-200"
+                        onClick={(e) => handleOnClick(e, cuisine)}>
+                        {cuisine}
+                    </Badge>
                 )}
 
             <div className="grid grid-cols- md:grid-cols-2 
             lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-x-10 
             gap-y-20 xl:gap-y-32 xl:pt-32 pt-12 pb-40">
-                {recipes.map((receipe, idx) => (
+                {(filterRecipes.length > 0 ? filterRecipes : recipes).map((receipe: RecipeType, idx: number) => (
                     <Card 
                         key={`${receipe.name}-${idx}`}
                         className="flex flex-col bg-orange-50 hover:scale-105 ease-in duration-200 xl:min-h-[600px] fancyGradient">
