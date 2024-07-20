@@ -87,7 +87,7 @@ export default function HomePage() {
                         key={`${cuisine}-${idx}`}
                         variant={"outline"}
                         className="border-orange-800 text-gray-900 text-lg mx-2 my-1 hover:cursor-pointer bg-orange-50 hover:scale-110 ease-in duration-200"
-                        onClick={(e) => handleOnClick(e, cuisine)}>
+                        onClick={(e) => handleOnClick(e , cuisine)}>
                         {cuisine}
                     </Badge>
                 )}
@@ -96,7 +96,8 @@ export default function HomePage() {
             lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-x-10 
             gap-y-20 xl:gap-y-32 xl:pt-32 pt-12 pb-40">
                 {(filterRecipes.length > 0 ? filterRecipes : recipes).map((receipe: RecipeType, idx: number) => (
-                    <Card 
+                    <a href={`/recipes/${receipe.id}`}>
+                        <Card 
                         key={`${receipe.name}-${idx}`}
                         className="flex flex-col bg-orange-50 hover:scale-105 ease-in duration-200 xl:min-h-[600px] fancyGradient">
                         <CardHeader>
@@ -131,6 +132,8 @@ export default function HomePage() {
                         </CardFooter>
 
                     </Card>
+                    </a>
+                    
                 ))}
             </div>
 
