@@ -12,7 +12,7 @@ function App() {
       <NavBar/>
       <Routes>
         <Route path='/' element={ <HomePage/>} />
-        <Route path='/recipes/:receipeId' element={ <ReceipePage/>} />
+        <Route path='/recipes/:recipeId' element={ <ReceipePage/>} />
         <Route path='*' element={ <p>This page does not exist.</p>} />
       </Routes>
     </>
