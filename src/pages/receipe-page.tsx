@@ -3,47 +3,28 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 export default function RecipePage() {
-
-  const { recipeId } = useParams<{ recipeId: string }>();
-  const [recipe, setRecipe] = useState<RecipeType | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { recipeId } = useParams();
+  const [recipe, setRecipe] = useState<RecipeType>();
 
   useEffect(() => {
+    const fn = async () => {
+      if (recipeId) {
+        const response = await fetch(
+          `https://dummyjson.com/recipes/${recipeId}`
+        );
+        const recipe = await response.json();
 
-    console.log('Recipe ID:', recipeId);
-
-    const fetchRecipe = async () => {
-      try {
-        if (recipeId) {
-          const response = await fetch(`https://dummyjson.com/recipes/${recipeId}`);
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          console.log('Fetched recipe:', data);  // Log the fetched data
-          setRecipe(data);
+        if (recipe) {
+          setRecipe(recipe);
         }
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchRecipe();
+    fn();
   }, [recipeId]);
 
-  if (loading) {
-    return <p>Recipe is being cooked...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
-
   if (!recipe) {
-    return <p>No recipe found.</p>;
+    return <p>Recipe is being cooked...</p>;
   }
 
   return (
@@ -93,7 +74,6 @@ export default function RecipePage() {
             width="400"
             height="400"
             className="w-96 h-96 lg:h-[600px] lg:w-[600px]"
-            alt={recipe.name}
           />
         </div>
       </div>
@@ -112,9 +92,9 @@ export default function RecipePage() {
         <div className="xl:px-12">
           <h2 className="uppercase text-5xl my-12">Instructions</h2>
           <div className="flex flex-col">
-            {recipe.instructions.map((instruction: string, idx: number) => (
-              <ul className="py-2 list-disc" key={`${instruction}-${idx}`}>
-                <li className="text-2xl">{instruction}</li>
+            {recipe.instructions.map((ingredient: string, idx: number) => (
+              <ul className="py-2 list-disc" key={`${ingredient}-${idx}`}>
+                <li className="text-2xl">{ingredient}</li>
               </ul>
             ))}
           </div>
